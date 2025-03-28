@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from "react";
+import { Platform } from "react-native";
 import { Path } from "react-native-svg";
 import differenceWith from "ramda/src/differenceWith";
-
 import { bodyFront } from "./assets/bodyFront";
 import { bodyBack } from "./assets/bodyBack";
 import { SvgMaleWrapper } from "./components/SvgMaleWrapper";
@@ -114,47 +114,52 @@ const Body = ({
       <SvgWrapper side={side} scale={scale} border={border}>
         {mergedBodyParts(bodyToRender).map((bodyPart: ExtendedBodyPart) => {
           const commonPaths = (bodyPart.path?.common || []).map((path) => {
-            const dataCommonPath = data.find((d) => d.slug === bodyPart.slug)
-              ?.path?.common;
-
+            const dataCommonPath = data.find((d) => d.slug === bodyPart.slug)?.path?.common;
             return (
               <Path
                 key={path}
-                onPress={() => onBodyPartPress?.(bodyPart)}
                 id={bodyPart.slug}
-                fill={
-                  dataCommonPath ? getColorToFill(bodyPart) : bodyPart.color
-                }
                 d={path}
+                fill={dataCommonPath ? getColorToFill(bodyPart) : bodyPart.color}
+                stroke="#000"
+                strokeWidth={0.5}
+                {...(Platform.OS === "web"
+                  ? { onPress: () => onBodyPartPress?.(bodyPart) }
+                  : { onPressIn: () => onBodyPartPress?.(bodyPart) })}
               />
             );
           });
 
           const leftPaths = (bodyPart.path?.left || []).map((path) => {
-            const isOnlyRight =
-              data.find((d) => d.slug === bodyPart.slug)?.side === "right";
-
+            const isOnlyRight = data.find((d) => d.slug === bodyPart.slug)?.side === "right";
             return (
               <Path
                 key={path}
-                onPress={() => onBodyPartPress?.(bodyPart, "left")}
                 id={bodyPart.slug}
-                fill={isOnlyRight ? "#3f3f3f" : getColorToFill(bodyPart)}
                 d={path}
+                fill={isOnlyRight ? "#3f3f3f" : getColorToFill(bodyPart)}
+                stroke="#000"
+                strokeWidth={0.5}
+                {...(Platform.OS === "web"
+                  ? { onPress: () => onBodyPartPress?.(bodyPart, "left") }
+                  : { onPressIn: () => onBodyPartPress?.(bodyPart, "left") })}
               />
             );
           });
-          const rightPaths = (bodyPart.path?.right || []).map((path) => {
-            const isOnlyLeft =
-              data.find((d) => d.slug === bodyPart.slug)?.side === "left";
 
+          const rightPaths = (bodyPart.path?.right || []).map((path) => {
+            const isOnlyLeft = data.find((d) => d.slug === bodyPart.slug)?.side === "left";
             return (
               <Path
                 key={path}
-                onPress={() => onBodyPartPress?.(bodyPart, "right")}
                 id={bodyPart.slug}
-                fill={isOnlyLeft ? "#3f3f3f" : getColorToFill(bodyPart)}
                 d={path}
+                fill={isOnlyLeft ? "#3f3f3f" : getColorToFill(bodyPart)}
+                stroke="#000"
+                strokeWidth={0.5}
+                {...(Platform.OS === "web"
+                  ? { onPress: () => onBodyPartPress?.(bodyPart, "right") }
+                  : { onPressIn: () => onBodyPartPress?.(bodyPart, "right") })}
               />
             );
           });
